@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>插件分组管理器</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+  <h1>插件分组管理器</h1>
+  <div class="controls">
+    <button id="create-group">创建新分组</button>
+    <button id="save-groups">保存分组</button>
+    <span id="help-icon">?</span>
+  </div>
+  <div id="groups-container"></div>
+  <div id="ungrouped-plugins">
+    <h2>待分组插件</h2>
+    <div id="extensions-list"></div>
+  </div>
+  <div id="help-popup" class="hidden">
+    <div class="help-content">
+      <h3>使用说明</h3>
+      <p>本插件使用 <a href="https://www.cursor.com/">Cursor</a> 开发, 获取源码:<a href="https://github.com/cary929/aaa-ext-manager">github</a></p>
+      <ol>
+        <li>分组标题 可重新编辑</li>
+        <li>分组 可拖动排序</li>
+        <li>解散分组 插件返回 [待分组区]</li>
+        <li>分组内不需要的插件可拖回 [待分组区]</li>
+        <li>点击插件图标可 [启用] 或 [禁用]</li>
+      </ol>
+      <button id="close-help">关闭</button>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

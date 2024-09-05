@@ -1,0 +1,283 @@
+body {
+  width: 400px;
+  padding: 10px;
+}
+
+.group {
+  position: relative;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: visible; /* 改为 visible 以允许提示框溢出 */
+  transition: box-shadow 0.3s;
+}
+
+.group:hover {
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.group-header {
+  background-color: #f0f0f0;
+  padding: 10px;
+  cursor: move;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+  position: relative;
+  z-index: 1; /* 给予较低的 z-index */
+}
+
+.group-header span {
+  font-weight: bold;
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+.enable-all-button,
+.dissolve-button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.2s;
+}
+
+.dissolve-button {
+  background-color: #f44336;
+  color: white;
+}
+
+.enable-all-button:hover {
+  background-color: #45a049;
+}
+
+.dissolve-button:hover {
+  background-color: #d32f2f;
+}
+
+.group-content {
+  position: relative;
+  z-index: 2; /* 给予较高的 z-index */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px;
+  min-height: 30px;
+  transition: max-height 0.3s ease-out;
+  overflow: visible; /* 改为 visible 以允许提示框溢出 */
+}
+
+.plugin-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.2s;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+.plugin-icon:hover {
+  transform: scale(1.05);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+
+.plugin-icon img {
+  max-width: 32px;
+  max-height: 32px;
+  object-fit: contain;
+}
+
+.plugin-icon.disabled img {
+  opacity: 0.5;
+}
+
+.status-indicator {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #4CAF50; /* 绿色表示启用 */
+}
+
+.plugin-icon.disabled .status-indicator {
+  background-color: #F44336; /* 红色表示禁用 */
+}
+
+.plugin-icon::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 5px;
+  border-radius: 3px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+  z-index: 1000; /* 给予很高的 z-index */
+}
+
+.plugin-icon:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+#all-plugins {
+  border-top: 1px solid #ccc;
+  padding-top: 10px;
+  margin-top: 20px;
+}
+
+h1 {
+  font-size: 18px;
+}
+
+.group-content.drag-over {
+  background-color: #e0e0e0;
+  border: 2px dashed #999;
+}
+
+#extensions-list.drag-over {
+  background-color: #e0e0e0;
+  border: 2px dashed #999;
+}
+
+#extensions-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+#save-groups {
+  margin-left: 10px;
+  padding: 5px 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#save-groups:hover {
+  background-color: #45a049;
+}
+
+#save-groups:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+#create-group {
+  margin-bottom: 10px;
+  padding: 5px 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+#create-group:hover {
+  background-color: #45a049;
+}
+
+.group.dragging {
+  opacity: 0.5;
+  transform: scale(1.05);
+}
+
+.group-buttons {
+  display: flex;
+  gap: 5px;
+}
+
+/* 将这样的注释 */
+/* 所有插件区域样式 */
+
+/* 修改为 */
+/* 待分组插件区域样式 */
+
+#all-plugins {
+  /* 样式保持不变 */
+}
+
+#help-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 20px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+#help-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.help-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  max-width: 80%;
+  position: relative;
+}
+
+.hidden {
+  display: none !important;
+}
+
+#close-help {
+  margin-top: 10px;
+  padding: 5px 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+#close-help:hover {
+  background-color: #45a049;
+}
+
+#ungrouped-plugins {
+  margin-top: 20px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  background-color: #f9f9f9;
+}
+
+#ungrouped-plugins h2 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #333;
+  font-size: 1.2em;
+}
