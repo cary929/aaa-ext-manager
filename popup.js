@@ -1,10 +1,4 @@
-/*
- * @Author: cary
- * @Date: 2024-09-05 09:29:17
- * @LastEditors: cary
- * @LastEditTime: 2024-09-05 13:54:26
- * @Description: description
- */
+
 // 弹出窗口脚本逻辑
 document.addEventListener('DOMContentLoaded', function() {
   console.log("DOM fully loaded and parsed");
@@ -27,7 +21,13 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.plugin-icon').forEach(addPluginIconClickListener);
 
     // 加载保存的分组信息
-    loadGroups();
+    loadGroups().then(() => {
+      console.log("Groups loaded successfully");
+      // 在加载完成后,保存一次分组信息,以确保所有数据都是最新的
+      saveGroups();
+    }).catch(error => {
+      console.error("Error loading groups:", error);
+    });
   });
 
   // 更新这里的按钮 ID
@@ -43,8 +43,11 @@ document.addEventListener('DOMContentLoaded', function() {
   // 添加保存按钮的事件监听器
   const saveButton = document.getElementById('save-groups');
   saveButton.addEventListener('click', function() {
-    saveGroups();
-    showSaveConfirmation();
+    saveGroups().then(() => {
+      showSaveConfirmation();
+    }).catch(error => {
+      console.error('Error saving groups:', error);
+    });
   });
 
   // 添加帮助图标的事件监听器
@@ -126,7 +129,7 @@ function createGroup(name = '新分组') {
     if (this.textContent.trim() === '') {
       this.textContent = '新分组';
     }
-    saveGroups().catch(error => console.error('Error saving groups:', error));
+    saveGroups();
   });
   header.appendChild(groupName);
 
@@ -168,7 +171,7 @@ function createGroup(name = '新分组') {
 
   groupsContainer.appendChild(group);
   console.log("New group added to the container");
-  saveGroups().catch(error => console.error('Error saving groups:', error));
+  saveGroups();
   
   return group;
 }
@@ -195,7 +198,7 @@ function dissolveGroup(group) {
   });
 
   group.remove();
-  saveGroups().catch(error => console.error('Error saving groups:', error));
+  saveGroups();
 }
 
 function implementDragAndDrop() {
@@ -253,7 +256,7 @@ function implementDragAndDrop() {
       }
     }
 
-    saveGroups().catch(error => console.error('Error saving groups:', error));
+    saveGroups();
   });
 }
 
@@ -274,7 +277,7 @@ function togglePlugin(id, enable) {
         icon.classList.toggle('enabled', enable);
         icon.classList.toggle('disabled', !enable);
         console.log(`Plugin ${id} ${enable ? 'enabled' : 'disabled'}`);
-        saveGroups().catch(error => console.error('Error saving groups:', error));
+        saveGroups();
       }
     }
   });
@@ -294,122 +297,95 @@ function enableAllInGroup(groupContent) {
       }
     });
   });
-  saveGroups().catch(error => console.error('Error saving groups:', error));
+  saveGroups();
 }
 
 // 保存分组信息
 function saveGroups() {
+  console.log("Saving groups");
+  const groups = document.querySelectorAll('.group');
+  const groupsData = Array.from(groups).map(group => {
+    const name = group.querySelector('.group-header span').textContent;
+    const plugins = Array.from(group.querySelectorAll('.plugin-icon')).map(plugin => plugin.dataset.id);
+    return { name, plugins };
+  });
+
   return new Promise((resolve, reject) => {
-    const groupsContainer = document.getElementById('groups-container');
-    const groups = Array.from(groupsContainer.children).map((group, index) => {
-      const groupName = group.querySelector('.group-header span').textContent;
-      const plugins = Array.from(group.querySelectorAll('.group-content .plugin-icon')).map(icon => ({
-        id: icon.dataset.id,
-        enabled: icon.classList.contains('enabled')
-      }));
-      console.log(`Saving group ${index + 1}: ${groupName} with ${plugins.length} plugins`);
-      return { name: groupName, plugins: plugins };
+    chrome.storage.local.set({ groups: groupsData }, function() {
+      if (chrome.runtime.lastError) {
+        console.error('Error saving groups:', chrome.runtime.lastError);
+        reject(chrome.runtime.lastError);
+      } else {
+        console.log('Groups saved successfully');
+        validateSavedGroups();
+        resolve();
+      }
     });
-
-    console.log(`Saving ${groups.length} groups`);
-
-    const storage = chrome.storage.sync || chrome.storage.local;
-    if (storage) {
-      storage.set({ groups: groups }, function() {
-        if (chrome.runtime.lastError) {
-          console.error('Error saving groups:', chrome.runtime.lastError);
-          reject(chrome.runtime.lastError);
-        } else {
-          console.log('Groups saved successfully:', groups);
-          validateSavedGroups(); // 验证保存的数据
-          resolve();
-        }
-      });
-    } else {
-      console.error('Chrome storage is not available');
-      reject(new Error('Chrome storage is not available'));
-    }
   });
 }
 
 // 加载分组信息
 function loadGroups() {
   console.log("Attempting to load groups");
-  const storage = chrome.storage.sync || chrome.storage.local;
-  if (storage) {
-    storage.get('groups', function(data) {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get('groups', function(data) {
       if (chrome.runtime.lastError) {
         console.error('Error loading groups:', chrome.runtime.lastError);
+        reject(chrome.runtime.lastError);
       } else {
         console.log("Retrieved data from storage:", data);
-        if (data.groups && data.groups.length > 0) {
+        if (data.groups && Array.isArray(data.groups) && data.groups.length > 0) {
           console.log(`Found ${data.groups.length} saved groups`);
           const groupsContainer = document.getElementById('groups-container');
-          groupsContainer.innerHTML = ''; // 清空现有分组
-
+          if (!groupsContainer) {
+            console.error("Could not find #groups-container element");
+            reject(new Error("Could not find #groups-container element"));
+            return;
+          }
+          groupsContainer.innerHTML = ''; // Clear existing groups
+          
           data.groups.forEach((groupData, index) => {
             console.log(`Creating group ${index + 1}:`, groupData.name);
             const group = createGroup(groupData.name);
-            if (groupData.plugins && groupData.plugins.length > 0) {
-              groupData.plugins.forEach(plugin => {
-                const pluginElement = document.querySelector(`.plugin-icon[data-id="${plugin.id}"]`);
-                if (pluginElement) {
-                  group.querySelector('.group-content').appendChild(pluginElement);
-                  console.log(`Added plugin ${plugin.id} to group ${groupData.name}`);
-                  // 更新插件状态
-                  pluginElement.classList.toggle('enabled', plugin.enabled);
-                  pluginElement.classList.toggle('disabled', !plugin.enabled);
-                  // 确保添加点击事件监听器
-                  addPluginIconClickListener(pluginElement);
-                  // 应用插件状态
-                  chrome.management.setEnabled(plugin.id, plugin.enabled, function() {
-                    if (chrome.runtime.lastError) {
-                      console.error('Error setting plugin state:', chrome.runtime.lastError);
-                    }
-                  });
-                } else {
-                  console.warn(`Could not find plugin element for id: ${plugin.id}`);
-                }
-              });
-            } else {
-              console.log(`Group ${groupData.name} is empty`);
-            }
-          });
-        } else {
-          console.log("No saved groups found");
-        }
-        validateSavedGroups(); // 验证加载的数据
-      }
-    });
-  } else {
-    console.error('Chrome storage is not available');
-  }
-}
-
-function validateSavedGroups() {
-  const storage = chrome.storage.sync || chrome.storage.local;
-  if (storage) {
-    storage.get('groups', function(data) {
-      if (chrome.runtime.lastError) {
-        console.error('Error validating groups:', chrome.runtime.lastError);
-      } else {
-        console.log("Validating saved groups:", data.groups);
-        if (data.groups && Array.isArray(data.groups)) {
-          data.groups.forEach((group, index) => {
-            console.log(`Group ${index + 1}: ${group.name}`);
-            console.log(`  Plugins: ${group.plugins.length}`);
-            group.plugins.forEach((pluginId, pluginIndex) => {
-              console.log(`    Plugin ${pluginIndex + 1}: ${pluginId}`);
+            const groupContent = group.querySelector('.group-content');
+            
+            groupData.plugins.forEach(pluginId => {
+              const pluginElement = document.querySelector(`.plugin-icon[data-id="${pluginId}"]`);
+              if (pluginElement) {
+                groupContent.appendChild(pluginElement);
+              } else {
+                console.warn(`Plugin with id ${pluginId} not found`);
+              }
             });
           });
         } else {
-          console.warn("No valid groups data found");
+          console.log("No valid saved groups found");
         }
+        resolve();
       }
     });
-  } else {
-    console.error('Chrome storage is not available');
-  }
+  });
+}
+
+function validateSavedGroups() {
+  chrome.storage.local.get('groups', function(data) {
+    if (chrome.runtime.lastError) {
+      console.error('Error validating groups:', chrome.runtime.lastError);
+    } else {
+      console.log("Validating saved groups:", data.groups);
+      if (data.groups && Array.isArray(data.groups)) {
+        data.groups.forEach((group, index) => {
+          console.log(`Group ${index + 1}: ${group.name}`);
+          console.log(`  Plugins: ${group.plugins.length}`);
+          group.plugins.forEach((pluginId, pluginIndex) => {
+            console.log(`    Plugin ${pluginIndex + 1}: ${pluginId}`);
+          });
+        });
+      } else {
+        console.warn("No valid groups data found");
+      }
+    }
+  });
 }
 
 // 如果你想保留这个函数以便将来使用,可以这样修改:
@@ -444,3 +420,13 @@ window.onerror = function(message, source, lineno, colno, error) {
   console.error("Global error:", message, "at", source, ":", lineno, ":", colno);
   console.error("Error object:", error);
 };
+
+chrome.runtime.onInstalled.addListener(function() {
+  chrome.storage.local.get('groups', function(data) {
+    if (!data.groups) {
+      chrome.storage.local.set({groups: []}, function() {
+        console.log('Initialized empty groups array');
+      });
+    }
+  });
+});
