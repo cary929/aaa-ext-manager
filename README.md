@@ -13,4 +13,5 @@
   快速启动: 点击插件图标启用或禁用插件
 
 
-
+Cursor的人工对话内容:
+https://github.com/cary929/aaa-ext-manager/wiki/Cursor--%E4%BA%BA%E5%B7%A5%E5%AF%B9%E8%AF%9D%E5%86%85%E5%AE%B9
