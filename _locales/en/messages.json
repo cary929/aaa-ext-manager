@@ -1,0 +1,74 @@
+{
+  "extName": {
+    "message": "AAA Extension Group Manager",
+    "description": "The name of the extension"
+  },
+  "extDescription": {
+    "message": "Easily manage and group your Chrome extensions: group sorting, one-click start, and quick switch of plugin status, which is really convenient",
+    "description": "Description of the extension"
+  },
+  "createGroup": {
+    "message": "Create New Group",
+    "description": "Text for create new group button"
+  },
+  "saveGroups": {
+    "message": "Save Groups",
+    "description": "Text for save groups button"
+  },
+  "ungroupedPlugins": {
+    "message": "Ungrouped Plugins",
+    "description": "Title for ungrouped plugins area"
+  },
+  "enableAll": {
+    "message": "Enable All",
+    "description": "Text for enable all plugins in group button"
+  },
+  "dissolveGroup": {
+    "message": "Dissolve Group",
+    "description": "Text for dissolve group button"
+  },
+  "helpTitle": {
+    "message": "Usage Instructions",
+    "description": "Title for help popup"
+  },
+  "helpAbout": {
+    "message": "This plugin is developed using Cursor",
+    "description": "Title for help about"
+  },
+  "helpContent1": {
+    "message": "Group title can be re-edited",
+    "description": "Help content 1"
+  },
+  "helpContent2": {
+    "message": "Grouping Drag and drop sorting",
+    "description": "Help content 2"
+  },
+  "helpContent3": {
+    "message": "Disband grouping plugin returns [Waiting for grouping area]",
+    "description": "Help content 3"
+  },
+  "helpContent4": {
+    "message": "Unnecessary plugins in the group can be dragged back to [Waiting for Grouping Area]",
+    "description": "Help content 4"
+  },
+  "helpContent5": {
+    "message": "Click the plugin icon to [Enable] or [Disable]",
+    "description": "Help content 5"
+  },
+  "close": {
+    "message": "Close",
+    "description": "Text for close button"
+  },
+  "newGroup": {
+    "message": "New Group",
+    "description": "Default name for new group"
+  },
+  "expand": {
+    "message": "expand",
+    "description": "expand the content"
+  },
+  "collapse": {
+    "message": "collapse",
+    "description": "collapse the content"
+  }
+}

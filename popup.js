@@ -1,3 +1,14 @@
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
 
 // 弹出窗口脚本逻辑
 document.addEventListener('DOMContentLoaded', function() {
@@ -72,6 +83,36 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // 实现拖放功能
   implementDragAndDrop();
+
+  // 更新页面标题
+  document.title = chrome.i18n.getMessage("extName");
+
+  // 更新页面中的静态文本
+  document.querySelector('h1').textContent = chrome.i18n.getMessage("extName");
+  document.querySelector('#create-group').textContent = chrome.i18n.getMessage("createGroup");
+  document.querySelector('#save-groups').textContent = chrome.i18n.getMessage("saveGroups");
+  document.querySelector('#ungrouped-plugins h2').textContent = chrome.i18n.getMessage("ungroupedPlugins");
+  document.querySelector('#help-popup h3').textContent = chrome.i18n.getMessage("helpTitle");
+  document.querySelector('#help-popup p').textContent = chrome.i18n.getMessage("helpAbout");
+  document.querySelector('#close-help').textContent = chrome.i18n.getMessage("close");
+
+  // 更新帮助内容
+  const helpList = document.querySelector('#help-popup ol');
+  helpList.innerHTML = `
+    <li>${chrome.i18n.getMessage("helpContent1")}</li>
+    <li>${chrome.i18n.getMessage("helpContent2")}</li>
+    <li>${chrome.i18n.getMessage("helpContent3")}</li>
+    <li>${chrome.i18n.getMessage("helpContent4")}</li>
+    <li>${chrome.i18n.getMessage("helpContent5")}</li>
+  `;
+
+  // 初始化所有分组的展开/折叠按钮文本
+  document.querySelectorAll('.group').forEach(group => {
+    const toggleButton = group.querySelector('.toggle-button');
+    if (toggleButton) {
+      toggleButton.textContent = chrome.i18n.getMessage("collapse") || '折叠';
+    }
+  });
 });
 
 function createPluginIcon(extension) {
@@ -82,7 +123,7 @@ function createPluginIcon(extension) {
   icon.classList.add(extension.enabled ? 'enabled' : 'disabled');
   icon.draggable = true;
   icon.dataset.id = extension.id;
-  icon.title = extension.name;
+  icon.title = chrome.i18n.getMessage(extension.name) || extension.name;
   
   const img = document.createElement('img');
   img.src = extension.icons && extension.icons.length > 0 ? extension.icons[0].url : 'default-icon.png';
@@ -107,7 +148,7 @@ function addPluginIconClickListener(icon) {
   });
 }
 
-function createGroup(name = '新分组') {
+function createGroup(name = chrome.i18n.getMessage("newGroup")) {
   console.log("Creating new group");
   const groupsContainer = document.getElementById('groups-container');
   if (!groupsContainer) {
@@ -123,11 +164,11 @@ function createGroup(name = '新分组') {
   header.draggable = true; // 使整个头部可拖动
   
   const groupName = document.createElement('span');
-  groupName.textContent = name;
+  groupName.textContent = chrome.i18n.getMessage(name) || name;
   groupName.contentEditable = true;
   groupName.addEventListener('blur', function() {
     if (this.textContent.trim() === '') {
-      this.textContent = '新分组';
+      this.textContent = chrome.i18n.getMessage("newGroup");
     }
     saveGroups();
   });
@@ -136,9 +177,9 @@ function createGroup(name = '新分组') {
   const buttonContainer = document.createElement('div');
   buttonContainer.className = 'group-buttons';
 
-  // 添加切换按钮
+  // 修改切换按钮
   const toggleButton = document.createElement('button');
-  toggleButton.textContent = '▼';
+  toggleButton.textContent = chrome.i18n.getMessage("collapse") || '折叠';
   toggleButton.className = 'toggle-button';
   toggleButton.addEventListener('click', function() {
     toggleGroupContent(group);
@@ -146,7 +187,7 @@ function createGroup(name = '新分组') {
   buttonContainer.appendChild(toggleButton);
 
   const enableAllButton = document.createElement('button');
-  enableAllButton.textContent = '一键启用';
+  enableAllButton.textContent = chrome.i18n.getMessage("enableAll");
   enableAllButton.className = 'enable-all-button';
   enableAllButton.addEventListener('click', function() {
     enableAllInGroup(group.querySelector('.group-content'));
@@ -154,7 +195,7 @@ function createGroup(name = '新分组') {
   buttonContainer.appendChild(enableAllButton);
 
   const dissolveButton = document.createElement('button');
-  dissolveButton.textContent = '解散分组';
+  dissolveButton.textContent = chrome.i18n.getMessage("dissolveGroup");
   dissolveButton.className = 'dissolve-button';
   dissolveButton.addEventListener('click', function() {
     dissolveGroup(group);
@@ -176,16 +217,16 @@ function createGroup(name = '新分组') {
   return group;
 }
 
-// 添加切换分组内容的函数
+// 修改切换分组内容的函数
 function toggleGroupContent(group) {
   const content = group.querySelector('.group-content');
   const toggleButton = group.querySelector('.toggle-button');
   if (content.style.display === 'none') {
     content.style.display = 'flex';
-    toggleButton.textContent = '▼';
+    toggleButton.textContent = chrome.i18n.getMessage("collapse") || '折叠';
   } else {
     content.style.display = 'none';
-    toggleButton.textContent = '▶';
+    toggleButton.textContent = chrome.i18n.getMessage("expand") || '展开';
   }
 }
 
@@ -301,8 +342,7 @@ function enableAllInGroup(groupContent) {
 }
 
 // 保存分组信息
-function saveGroups() {
-  console.log("Saving groups");
+const debouncedSaveGroups = debounce(function() {
   const groups = document.querySelectorAll('.group');
   const groupsData = Array.from(groups).map(group => {
     const name = group.querySelector('.group-header span').textContent;
@@ -310,18 +350,21 @@ function saveGroups() {
     return { name, plugins };
   });
 
-  return new Promise((resolve, reject) => {
-    chrome.storage.local.set({ groups: groupsData }, function() {
-      if (chrome.runtime.lastError) {
-        console.error('Error saving groups:', chrome.runtime.lastError);
-        reject(chrome.runtime.lastError);
-      } else {
-        console.log('Groups saved successfully');
-        validateSavedGroups();
-        resolve();
-      }
-    });
+  console.log("Groups data to be saved:", groupsData);
+
+  chrome.storage.local.set({ groups: groupsData }, function() {
+    if (chrome.runtime.lastError) {
+      console.error('Error saving groups:', chrome.runtime.lastError);
+    } else {
+      console.log('Groups saved successfully');
+      validateSavedGroups();
+    }
   });
+}, 300);
+
+function saveGroups() {
+  console.log("Saving groups");
+  debouncedSaveGroups();
 }
 
 // 加载分组信息
@@ -345,7 +388,7 @@ function loadGroups() {
           groupsContainer.innerHTML = ''; // Clear existing groups
           
           data.groups.forEach((groupData, index) => {
-            console.log(`Creating group ${index + 1}:`, groupData.name);
+            console.log(`Creating group ${index + 1}:`, groupData);
             const group = createGroup(groupData.name);
             const groupContent = group.querySelector('.group-content');
             

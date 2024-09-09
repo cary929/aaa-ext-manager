@@ -44,6 +44,11 @@ body {
   transition: background-color 0.2s;
 }
 
+.enable-all-button {
+  background-color: #45a049;
+  color: white;
+}
+
 .dissolve-button {
   background-color: #f44336;
   color: white;
@@ -280,4 +285,13 @@ h1 {
   margin-bottom: 10px;
   color: #333;
   font-size: 1.2em;
+}
+
+.toggle-button {
+  padding: 2px 5px;
+  font-size: 12px;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 3px;
 }

@@ -1,0 +1,74 @@
+{
+  "extName": {
+    "message": "AAA_插件分组管理",
+    "description": "扩展名称"
+  },
+  "extDescription": {
+    "message": "分组管理您的插件或扩展：分组排序、一键启动、插件状态快速切换，真的很便捷",
+    "description": "扩展描述"
+  },
+  "createGroup": {
+    "message": "创建新分组",
+    "description": "创建新分组按钮文本"
+  },
+  "saveGroups": {
+    "message": "保存分组",
+    "description": "保存分组按钮文本"
+  },
+  "ungroupedPlugins": {
+    "message": "待分组插件",
+    "description": "未分组插件区域标题"
+  },
+  "enableAll": {
+    "message": "一键启用",
+    "description": "启用分组内所有插件按钮文本"
+  },
+  "dissolveGroup": {
+    "message": "解散分组",
+    "description": "解散分组按钮文本"
+  },
+  "helpTitle": {
+    "message": "使用说明",
+    "description": "帮助弹窗标题"
+  },
+  "helpAbout": {
+    "message": "本插件使用 Cursor 开发, 获取源码: https://github.com/cary929/aaa-ext-manager",
+    "description": "帮助介绍"
+  },
+  "helpContent1": {
+    "message": "分组标题 可重新编辑",
+    "description": "帮助内容1"
+  },
+  "helpContent2": {
+    "message": "分组 可拖动排序",
+    "description": "帮助内容2"
+  },
+  "helpContent3": {
+    "message": "解散分组 插件返回 [待分组区]",
+    "description": "帮助内容3"
+  },
+  "helpContent4": {
+    "message": "分组内不需要的插件可拖回 [待分组区]",
+    "description": "帮助内容4"
+  },
+  "helpContent5": {
+    "message": "点击插件图标可 [启用] 或 [禁用]",
+    "description": "帮助内容5"
+  },
+  "close": {
+    "message": "关闭",
+    "description": "关闭按钮文本"
+  },
+  "newGroup": {
+    "message": "新分组",
+    "description": "新建分组的默认名称"
+  },
+  "expand": {
+    "message": "展开",
+    "description": "展开分组按钮文本"
+  },
+  "collapse": {
+    "message": "折叠",
+    "description": "折叠分组按钮文本"
+  }
+}
