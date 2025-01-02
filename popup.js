@@ -228,6 +228,7 @@ function toggleGroupContent(group) {
     content.style.display = 'none';
     toggleButton.textContent = chrome.i18n.getMessage("expand") || '展开';
   }
+  saveGroups();
 }
 
 function dissolveGroup(group) {
@@ -347,7 +348,8 @@ const debouncedSaveGroups = debounce(function() {
   const groupsData = Array.from(groups).map(group => {
     const name = group.querySelector('.group-header span').textContent;
     const plugins = Array.from(group.querySelectorAll('.plugin-icon')).map(plugin => plugin.dataset.id);
-    return { name, plugins };
+    const isCollapsed = group.querySelector('.group-content').style.display === 'none';
+    return { name, plugins, isCollapsed };
   });
 
   console.log("Groups data to be saved:", groupsData);
@@ -400,6 +402,15 @@ function loadGroups() {
                 console.warn(`Plugin with id ${pluginId} not found`);
               }
             });
+
+            // 恢复折叠状态
+            if (groupData.isCollapsed) {
+              groupContent.style.display = 'none';
+              group.querySelector('.toggle-button').textContent = chrome.i18n.getMessage("expand") || '展开';
+            } else {
+              groupContent.style.display = 'flex';
+              group.querySelector('.toggle-button').textContent = chrome.i18n.getMessage("collapse") || '折叠';
+            }
           });
         } else {
           console.log("No valid saved groups found");
