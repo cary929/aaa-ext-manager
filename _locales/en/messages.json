@@ -24,7 +24,7 @@
     "description": "Text for enable all plugins in group button"
   },
   "dissolveGroup": {
-    "message": "Dissolve Group",
+    "message": "dissolve",
     "description": "Text for dissolve group button"
   },
   "helpTitle": {
@@ -36,23 +36,23 @@
     "description": "Title for help about"
   },
   "helpContent1": {
-    "message": "Group title can be re-edited",
+    "message": "click the group title to edit",
     "description": "Help content 1"
   },
   "helpContent2": {
-    "message": "Grouping Drag and drop sorting",
+    "message": "grouping, drag and drop sorting",
     "description": "Help content 2"
   },
   "helpContent3": {
-    "message": "Disband grouping plugin returns [Waiting for grouping area]",
+    "message": "dissolve group, the plugin returns to ungrouped plugins",
     "description": "Help content 3"
   },
   "helpContent4": {
-    "message": "Unnecessary plugins in the group can be dragged back to [Waiting for Grouping Area]",
+    "message": "drag and drop the unuse plugin icon from group to ungrouped plugins",
     "description": "Help content 4"
   },
   "helpContent5": {
-    "message": "Click the plugin icon to [Enable] or [Disable]",
+    "message": "click the plugin icon to enable or disable",
     "description": "Help content 5"
   },
   "close": {
@@ -70,5 +70,13 @@
   "collapse": {
     "message": "collapse",
     "description": "collapse the content"
+  },
+  "batchEnable": {
+    "message": "all start",
+    "description": "Batch Enable button text"
+  },
+  "batchDisable": {
+    "message": "all stop",
+    "description": "Batch Disable button text"
   }
 }

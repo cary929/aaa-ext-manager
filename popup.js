@@ -186,13 +186,23 @@ function createGroup(name = chrome.i18n.getMessage("newGroup")) {
   });
   buttonContainer.appendChild(toggleButton);
 
+  // 修改批量启动按钮
   const enableAllButton = document.createElement('button');
-  enableAllButton.textContent = chrome.i18n.getMessage("enableAll");
+  enableAllButton.textContent = chrome.i18n.getMessage("batchEnable") || '批量启动';
   enableAllButton.className = 'enable-all-button';
   enableAllButton.addEventListener('click', function() {
     enableAllInGroup(group.querySelector('.group-content'));
   });
   buttonContainer.appendChild(enableAllButton);
+
+  // 添加批量关闭按钮
+  const disableAllButton = document.createElement('button');
+  disableAllButton.textContent = chrome.i18n.getMessage("batchDisable") || '批量关闭';
+  disableAllButton.className = 'disable-all-button';
+  disableAllButton.addEventListener('click', function() {
+    disableAllInGroup(group.querySelector('.group-content'));
+  });
+  buttonContainer.appendChild(disableAllButton);
 
   const dissolveButton = document.createElement('button');
   dissolveButton.textContent = chrome.i18n.getMessage("dissolveGroup");
@@ -336,6 +346,23 @@ function enableAllInGroup(groupContent) {
         plugin.classList.add('enabled');
         plugin.classList.remove('disabled');
         console.log(`Plugin ${pluginId} enabled`);
+      }
+    });
+  });
+  saveGroups();
+}
+
+function disableAllInGroup(groupContent) {
+  const plugins = groupContent.querySelectorAll('.plugin-icon');
+  plugins.forEach(plugin => {
+    const pluginId = plugin.dataset.id;
+    chrome.management.setEnabled(pluginId, false, function() {
+      if (chrome.runtime.lastError) {
+        console.error('Error disabling plugin:', chrome.runtime.lastError);
+      } else {
+        plugin.classList.remove('enabled');
+        plugin.classList.add('disabled');
+        console.log(`Plugin ${pluginId} disabled`);
       }
     });
   });

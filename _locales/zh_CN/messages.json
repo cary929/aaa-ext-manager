@@ -70,5 +70,13 @@
   "collapse": {
     "message": "折叠",
     "description": "折叠分组按钮文本"
+  },
+  "batchEnable": {
+    "message": "批量启动",
+    "description": "批量启动按钮文本"
+  },
+  "batchDisable": {
+    "message": "批量关闭",
+    "description": "批量关闭按钮文本"
   }
 }
